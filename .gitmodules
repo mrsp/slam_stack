@@ -1,3 +1,6 @@
 [submodule "g2o_slam3d"]
 	path = g2o_slam3d
 	url = https://github.com/mrsp/g2o_slam3d.git
+[submodule "multi_voxels"]
+	path = multi_voxels
+	url = https://github.com/tavu/multi_voxels.git
