@@ -1,0 +1,6 @@
+#ignore hidden files
+.*
+#ignore backups
+*.bak
+*.back
+*~
