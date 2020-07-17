@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>    
+    <node pkg="key_frame_publisher" type="key_frame_publisher_node" name="key_frame_publisher" respawn="false" output="screen" > 	
+        <rosparam file="$(find key_frame_publisher)/config/intel.yaml" command="load"/> 
+    </node>
+</launch>
