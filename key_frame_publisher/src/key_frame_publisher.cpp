@@ -21,7 +21,7 @@ typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sens
 //TODO add contact here
 bool isKeyFrame( uint frame)
 {
-    return frame%kf_rate == 0;
+    return kf_rate!=0 && frame%kf_rate == 0;
 }
 
 void imageDepthCb(const sensor_msgs::ImageConstPtr &img_msg, 
