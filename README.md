@@ -12,4 +12,4 @@ A ROS stack for g2o-based slam with Kinect Fusion and TSDF Interpolation
 * roslaunch multi_voxels multi_voxels_kfp.launch
 * roslaunch key_frame_publisher key_frame_publisher_xtion.launch
 * roslaunch g2o_slam g2o_slam_kfp_xtion.launch
-* rosbag play vipgpu.bag
+* rosbag play [vipgpu.bag](https://drive.google.com/file/d/1oJZMPMfYdTEhBT_NgQeQKTTVwuR_jpM5/view?usp=sharing)
