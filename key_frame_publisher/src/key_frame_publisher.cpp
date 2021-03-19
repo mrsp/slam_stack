@@ -15,13 +15,29 @@ ros::Publisher image_pub, depth_pub, kf_pub, cam_info_pub;
 bool mm_to_meters;
 int kf_rate;
 sensor_msgs::CameraInfo camInfo;
-
+double blurrThreshold;
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MySyncPolicy;
 
 //TODO add contact here
-bool isKeyFrame( uint frame)
+bool isKeyFrame( uint frame, double focusMeasure)
 {
-    return kf_rate!=0 && frame%kf_rate == 0;
+    if(kf_rate!=0 && frame%kf_rate == 0 && focusMeasure >= blurrThreshold)
+        return 1;
+    else
+        return 0;
+}
+
+// OpenCV port of 'LAPV' algorithm (Pech2000)
+double varianceOfLaplacian(const cv::Mat& src)
+{
+    cv::Mat lap;
+    cv::Laplacian(src, lap, CV_64F);
+
+    cv::Scalar mu, sigma;
+    cv::meanStdDev(lap, mu, sigma);
+
+    double focusMeasure = sigma.val[0]*sigma.val[0];
+    return focusMeasure;
 }
 
 void imageDepthCb(const sensor_msgs::ImageConstPtr &img_msg, 
@@ -39,6 +55,20 @@ void imageDepthCb(const sensor_msgs::ImageConstPtr &img_msg,
         return;
     }
     
+    cv::Mat mono;
+    if (rgb->image.channels() == 3)
+    {
+        cvtColor(rgb->image, mono, cv::COLOR_BGR2GRAY);
+    }
+    else
+    {
+        mono = rgb->image;
+    }
+
+
+
+    double focusMeasure = varianceOfLaplacian(mono);
+
     try
     {
        depth = cv_bridge::toCvCopy(depth_msg, sensor_msgs::image_encodings::TYPE_32FC1);
@@ -54,7 +84,7 @@ void imageDepthCb(const sensor_msgs::ImageConstPtr &img_msg,
     ros::Time now = ros::Time::now();      
     
     key_frame_publisher::boolStamped bool_msg;    
-    bool_msg.indicator.data=isKeyFrame(frame);
+    bool_msg.indicator.data=isKeyFrame(frame,focusMeasure);
     bool_msg.header.stamp=now;    
     
     sensor_msgs::Image rgbRosMsg;
@@ -73,6 +103,16 @@ void imageDepthCb(const sensor_msgs::ImageConstPtr &img_msg,
     kf_pub.publish(bool_msg);
 }
 
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "key_frame_publisher");
@@ -86,7 +126,8 @@ int main(int argc, char *argv[])
     
     n_p.param<bool>("mm_to_meters", mm_to_meters, false);        
     n_p.param<int>("kf_rate", kf_rate, 50);        
-    
+    n_p.param<double>("blurrThreshold", blurrThreshold, 150.0);
+
     //publishers
     image_pub =  n_p.advertise<sensor_msgs::Image>("/kfp/rgb/image_raw",100);    
     depth_pub = n_p.advertise<sensor_msgs::Image>("/kfp/depth/image_raw",100);

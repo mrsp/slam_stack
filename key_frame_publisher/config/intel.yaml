@@ -2,4 +2,5 @@ image_topic: "/camera/color/image_raw"
 cam_info_topic: "/camera/aligned_depth_to_color/camera_info"
 depth_topic: "/camera/aligned_depth_to_color/image_raw"
 mm_to_meters: true
-kf_rate: 20
+kf_rate: 2
+blurrThreshold: 120

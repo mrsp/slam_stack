@@ -3,3 +3,4 @@ cam_info_topic: "/camera/rgb/camera_info"
 depth_topic: "/camera/depth_registered/sw_registered/image_rect"
 mm_to_meters: false
 kf_rate: 50
+blurrThreshold: 100
